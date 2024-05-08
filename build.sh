@@ -1,11 +1,27 @@
 #!/bin/bash
 
-#----------------------------------------
-# Prerequisities 1
+set -e
+
+#============================================================
+# Prerequisities 0
+
+echo ""
+echo "============================================================"
+echo "Prerequisities 0"
+echo ""
 
 #sudo apt-get update -y
 #sudo apt-get upgrade -y
-#sudo apt-get install -y build-essential gdb mono-complete
+echo "sudo apt-get install -y build-essential gdb texinfo mono-complete"
+sudo apt-get install -y build-essential gdb texinfo mono-complete
+
+#============================================================
+# Prerequisities 1
+
+echo ""
+echo "============================================================"
+echo "Prerequisities 1"
+echo ""
 
 mkdir -p artifacts
 cd artifacts
@@ -21,8 +37,13 @@ if [ ! -f dotnet-install.sh ]; then
 fi
 cd ..
 
-#----------------------------------------
+#============================================================
 # Prerequisities 2
+
+echo ""
+echo "============================================================"
+echo "Prerequisities 2"
+echo ""
 
 export PATH=~/.dotnet:~/.dotnet/tools:$PATH
 export DOTNET_ROOT=~/.dotnet
@@ -31,24 +52,45 @@ dotnet tool update -g chibias-cli
 dotnet tool update -g chibiar-cli
 dotnet tool update -g chibild-cli
 
-#----------------------------------------
-# Build toolchain and libc
+#============================================================
+# Build toolchain
 
-(cd chibicc-cil-toolchain; dotnet clean; dotnet build)
-(cd libc-cil; dotnet clean; dotnet build)
+echo ""
+echo "============================================================"
+echo "Build toolchain"
+echo ""
 
-#----------------------------------------
-# Build chibicc-cil
+(cd chibicc-cil-toolchain && dotnet clean && dotnet build)
 
-export CHIBICC_CIL_INCLUDE_PATH=`pwd`/chibicc-cil/include
-export CHIBICC_CIL_LIB_PATH=`pwd`/libc-cil/libc-bootstrap/bin/Debug/netstandard2.0
-export CHIBIAS_CIL_PATH=`pwd`/chibicc-cil-toolchain/chibias/chibias/bin/Debug/net6.0/cil-chibias
-export CHIBIAR_CIL_PATH=`pwd`/chibicc-cil-toolchain/chibiar/chibiar/bin/Debug/net6.0/cil-chibiar
-export CHIBILD_CIL_PATH=`pwd`/chibicc-cil-toolchain/chibild/chibild/bin/Debug/net6.0/cil-chibild
+#============================================================
+# Build libc (bootstrap)
 
-cd chibicc-cil
+echo ""
+echo "============================================================"
+echo "Build libc (bootstrap)"
+echo ""
 
-make clean;
-make -j test
-make -j test-stage2
-make -j test-stage3
+(cd libc-cil && ./build-crt0.sh && dotnet clean && dotnet build)
+
+#============================================================
+# Build chibicc-cil (bootstrap)
+
+echo ""
+echo "============================================================"
+echo "Build chibicc-cil (bootstrap)"
+echo ""
+
+(cd chibicc-cil && make clean && make -j test)
+#(cd chibicc-cil && make clean && make -j test && make -j test-stage2)
+#(cd chibicc-cil && make clean && make -j test && make -j test-stage2 && make -j test-stage3)
+
+#============================================================
+# Build newlib
+
+echo ""
+echo "============================================================"
+echo "Build newlib"
+echo ""
+
+(cd libc-cil && ./build-newlib.sh)
+
