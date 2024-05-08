@@ -3,9 +3,9 @@
 #----------------------------------------
 # Prerequisities 1
 
-sudo apt-get update -y
-sudo apt-get upgrade -y
-sudo apt-get install -y build-essential gdb mono-complete
+#sudo apt-get update -y
+#sudo apt-get upgrade -y
+#sudo apt-get install -y build-essential gdb mono-complete
 
 mkdir -p artifacts
 cd artifacts
@@ -32,12 +32,19 @@ dotnet tool update -g chibiar-cli
 dotnet tool update -g chibild-cli
 
 #----------------------------------------
-# Build entire
-
-export CHIBICC_CIL_ROOT=`pwd`
+# Build toolchain and libc
 
 (cd chibicc-cil-toolchain; dotnet clean; dotnet build)
 (cd libc-cil; dotnet clean; dotnet build)
+
+#----------------------------------------
+# Build chibicc-cil
+
+export CHIBICC_CIL_INCLUDE_PATH=`pwd`/chibicc-cil/include
+export CHIBICC_CIL_LIB_PATH=`pwd`/libc-cil/libc-bootstrap/bin/Debug/netstandard2.0
+export CHIBIAS_CIL_PATH=`pwd`/chibicc-cil-toolchain/chibias/chibias/bin/Debug/net6.0/cil-chibias
+export CHIBIAR_CIL_PATH=`pwd`/chibicc-cil-toolchain/chibiar/chibiar/bin/Debug/net6.0/cil-chibiar
+export CHIBILD_CIL_PATH=`pwd`/chibicc-cil-toolchain/chibild/chibild/bin/Debug/net6.0/cil-chibild
 
 cd chibicc-cil
 
