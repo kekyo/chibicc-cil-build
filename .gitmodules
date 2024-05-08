@@ -1,0 +1,9 @@
+[submodule "chibicc-cil"]
+	path = chibicc-cil
+	url = https://github.com/kekyo/chibicc-cil
+[submodule "chibicc-cil-toolchain"]
+	path = chibicc-cil-toolchain
+	url = https://github.com/kekyo/chibicc-cil-toolchain
+[submodule "libc-cil"]
+	path = libc-cil
+	url = https://github.com/kekyo/libc-cil
