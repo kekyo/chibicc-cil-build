@@ -48,10 +48,6 @@ echo ""
 export PATH=~/.dotnet:~/.dotnet/tools:$PATH
 export DOTNET_ROOT=~/.dotnet
 
-dotnet tool update -g chibias-cli
-dotnet tool update -g chibiar-cli
-dotnet tool update -g chibild-cli
-
 #============================================================
 # Build toolchain
 
@@ -70,7 +66,7 @@ echo "============================================================"
 echo "Build libc (bootstrap)"
 echo ""
 
-(cd libc-cil && ./build-crt0.sh && dotnet clean && dotnet build)
+(cd libc-cil && ./build-crt0.sh && dotnet clean libc.sln && dotnet build libc.sln)
 
 #============================================================
 # Build chibicc-cil (bootstrap)
@@ -80,9 +76,7 @@ echo "============================================================"
 echo "Build chibicc-cil (bootstrap)"
 echo ""
 
-(cd chibicc-cil && make clean && make -j test)
-#(cd chibicc-cil && make clean && make -j test && make -j test-stage2)
-#(cd chibicc-cil && make clean && make -j test && make -j test-stage2 && make -j test-stage3)
+(cd chibicc-cil && make clean && make -j test && make -j test-stage2 && make -j test-stage3)
 
 #============================================================
 # Build newlib
@@ -94,3 +88,26 @@ echo ""
 
 (cd libc-cil && ./build-newlib.sh)
 
+#============================================================
+# Build libgloss
+
+echo ""
+echo "============================================================"
+echo "Build libgloss"
+echo ""
+
+(cd libc-cil && dotnet clean libgloss.sln && dotnet build libgloss.sln)
+
+export CHIBICC_CIL_INCLUDE_PATH=`pwd`/libc-cil/newlib/newlib/libc/include
+export CHIBICC_CIL_LIB_PATH=`pwd`/libc-cil/libgloss/bin/Debug/netstandard2.0
+
+#============================================================
+# Build chibicc-cil (main)
+
+echo ""
+echo "============================================================"
+echo "Build chibicc-cil (main)"
+echo ""
+
+# Broken
+#(cd chibicc-cil && make clean && make -j test && make -j test-stage2 && make -j test-stage3)
